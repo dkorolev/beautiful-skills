@@ -63,13 +63,13 @@ Prefer a tight, CI-runnable definition, even if it comes in the form of a prose,
 
 ## Follow the repo's guidelines (keep the code sane)
 
-- Read the repo playbook first — [`CONTRIBUTING.md`](../../CONTRIBUTING.md) is the authoritative guide for this repository (layout, the `tmp/` rule, house style, commit conventions). Skim it before you build; the points below are the parts that bear most directly on a one-shot feature. Follow the files and links from it, since many repos these days have convoluted instructions.
+- Read the repo playbook first — before you build, find and read whatever governing docs the repository provides and hold the work to them: `CONTRIBUTING.md`, agent and model instruction files (`AGENTS.md`, `CLAUDE.md`, including nested ones), and any conventions the repo declares — a constitution and its amendments, development principles, maxims, or style guides. Many repos carry convoluted, interlinked instructions, so follow the links. The repo's own stated conventions — layout, the `tmp/` rule, house style, commit conventions — win over anything here; the points below are just the parts that bear most directly on a one-shot feature.
 
-- Skill and layout conventions — [`.skills/README.md`](../README.md) is the source of truth for skills; this skill follows its frontmatter rules (folder name == `name`). Keep in mind that the preferred convention is to have a single `.skills` directory at the root of the repo, which is symlink'ed from various other directories such as `.claude/skills`, `.codex/skills`, `.cursor/skills`, etc. If possible, follow this convention.
+- Skill and layout conventions — each skill is a `SKILL.md` in its own directory under `.skills/`, with YAML frontmatter whose `name` matches the directory (folder name == `name`). The common convention is a single `.skills/` directory at the repo root, symlinked from the per-harness directories (`.claude/skills`, `.codex/skills`, `.cursor/skills`, etc.); follow that layout if the repo uses it.
 
 - Build in the right place — by default, integrate the work into the repo like any normal change (see "Where it goes" above). Only a separate feature under `features/<feature-id>/` is held to the self-containment rule: its own `Cargo.toml`/`package.json`, pinned deps, tests, demo, README, and a local `.gitignore` if the stack needs one, wired into nothing else — that isolation is what lets it finish in one shot.
 
-- The `tmp/` rule — in this repo `tmp/` always means the gitignored `tmp/` subdirectory of the repo, never the system temp dir (see `CONTRIBUTING.md`). Anything you write back into the repo goes under `tmp/`; respect the root `.gitignore`.
+- The `tmp/` rule — `tmp/` always means the gitignored `tmp/` subdirectory of the repo you are working in, never the system temp dir. Anything you write back into the repo as scratch goes under `tmp/`; respect the root `.gitignore`.
 
 - House style — match the surrounding code's naming, comment density, and idiom for whatever language you choose; write code that reads like it belongs. Format before you finish (e.g. `cargo fmt`), keep files free of trailing whitespace, and end every file with a newline.
 
