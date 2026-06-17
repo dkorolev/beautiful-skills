@@ -9,7 +9,7 @@ A metaskill. The contract with the user is simple and absolute:
 
 > **Ask once. Then deliver everything. Never ask again.**
 
-You collect the feature description in a single intake step, then build a complete, runnable feature — code + demo + README + tests + deps — without ever coming back to the user with a clarifying question. Every ambiguity is resolved by you, with a sensible default that you journal diligently as an assumption. The deliverable is judged on end-to-end completeness: it actually runs, and you have verified it end to end. The assumption should be documented in a human way, and not as a quesiton but as a statement, along there lines of "To speed up delivery, here the assumption is ...".
+You collect the feature description in a single intake step, then build a complete, runnable feature — code + demo + README + tests + deps — without ever coming back to the user with a clarifying question. Every ambiguity is resolved by you, with a sensible default that you journal diligently as an assumption. The deliverable is judged on end-to-end completeness: it actually runs, and you have verified it end to end. The assumption should be documented in a human way, and not as a question but as a statement, along the lines of "To speed up delivery, here the assumption is ...".
 
 ## The one and only question (step 1)
 
@@ -53,7 +53,7 @@ The feature is not done until every item below exists and you have actually run 
 | Working code | Implements the described behavior; runs with no external setup beyond installing pinned deps. |
 | Runnable demo | A single obvious entrypoint, PROGRAMMATIC OR AGENTIC, that works end to end. It can be some `demo.sh`, `make demo`, `python demo.py`, `npm run demo`, and it can also be "Ask your coding agent to follow the instructions in FEATURE-DEMO.md". This complements the tests, it does not replace them. |
 | Documentation | What it is / how to install / how to run the demo / how to run tests / Assumptions / Design decisions / what's deferred (if anything). In the repo's preferred format, most often as a Markdown file somewhere. |
-| Tests (primary proof) | Automated tests that exercise the core behavior and pass, written with the language's standard test runner so they run in CI on every commit. If a behavior can be asserted programmatically, it belongs here — not in a one-off demo script. No extra test-framework dependency if the stdlib has one. If the feature is complex and invoking every step programmatically is error-prone, prefer the AGENTIC path, where instead of a fixed-format runnable script there exists an English-first Markdown file with short code snippets and descritions of why they should be run and what their result should be. This way the acceptance criteria can be verified both by a diligent human and by an AI agent. |
+| Tests (primary proof) | Automated tests that exercise the core behavior and pass, written with the language's standard test runner so they run in CI on every commit. If a behavior can be asserted programmatically, it belongs here — not in a one-off demo script. No extra test-framework dependency if the stdlib has one. If the feature is complex and invoking every step programmatically is error-prone, prefer the AGENTIC path, where instead of a fixed-format runnable script there exists an English-first Markdown file with short code snippets and descriptions of why they should be run and what their result should be. This way the acceptance criteria can be verified both by a diligent human and by an AI agent. |
 | Pinned deps | `requirements.txt` / `package.json` / `Cargo.toml` etc., pinned. For a separate feature, scoped to its own dir; when integrating, add to the repo's manifest as a deliberate, called-out change. Empty/none if stdlib-only — say so in the documentation. |
 | No stray artifacts | No `__pycache__/`, `.DS_Store`, `node_modules/`, build output, or `work/` committed (already covered by repo `.gitignore`; add a local `.gitignore` if the stack needs more). |
 
@@ -65,7 +65,7 @@ Prefer a tight, CI-runnable definition, even if it comes in the form of a prose,
 
 - Read the repo playbook first — [`CONTRIBUTING.md`](../../CONTRIBUTING.md) is the authoritative guide for this repository (layout, the `tmp/` rule, house style, commit conventions). Skim it before you build; the points below are the parts that bear most directly on a one-shot feature. Follow the files and links from it, since many repos these days have convoluted instructions.
 
-- Skill and layout conventions — [`.skills/README.md`](../README.md) is the source of truth for skills; this skill follows its frontmatter rules (folder name == `name`). Keep in mind that the preferred convention is to have a single `.skills` directory at the root of the repo, which is symlink'ed from various other directories such as `.claude/skills`, `.codex/skills`, `.cursor/skills`, etc. If possible, follow this convension.
+- Skill and layout conventions — [`.skills/README.md`](../README.md) is the source of truth for skills; this skill follows its frontmatter rules (folder name == `name`). Keep in mind that the preferred convention is to have a single `.skills` directory at the root of the repo, which is symlink'ed from various other directories such as `.claude/skills`, `.codex/skills`, `.cursor/skills`, etc. If possible, follow this convention.
 
 - Build in the right place — by default, integrate the work into the repo like any normal change (see "Where it goes" above). Only a separate feature under `features/<feature-id>/` is held to the self-containment rule: its own `Cargo.toml`/`package.json`, pinned deps, tests, demo, README, and a local `.gitignore` if the stack needs one, wired into nothing else — that isolation is what lets it finish in one shot.
 
@@ -86,9 +86,9 @@ Prefer a tight, CI-runnable definition, even if it comes in the form of a prose,
 
 ## Anti-patterns
 
-- Do not asking a second question after intake ("just to confirm..."). Decide and document instead.
-- Do not just deliver a skeleton, with TODOs, or "next you'd add...". Provide of working code.
+- Do not ask a second question after intake ("just to confirm..."). Decide and document instead.
+- Do not just deliver a skeleton, with TODOs, or "next you'd add...". Provide working code.
 - Do not declare the process done without running the tests and demo. Self-check yourself and re-run the steps for as long as it is necessary.
-- Do not just proving a testable behavior with only a demo script when it could and should be a unit/regression test.
+- Do not just prove a testable behavior with only a demo script when it could and should be a unit/regression test.
 - Do not rewrite history (rebasing/squashing shared commits); only ever add commits on top. Always remain fast-forward-friendly.
-- Do not pushing, open a PR, or perform any external action without an explicit request from the user.
+- Do not push, open a PR, or perform any external action without an explicit request from the user.
