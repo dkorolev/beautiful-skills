@@ -1,0 +1,6 @@
+# Keeping tmp/ gitignored is just good hygiene. The skills here write their scratch and
+# result files under tmp/, and scsh's own `run` preflight requires tmp/ to be gitignored.
+# This file is authoring infra, not shipped to consumers (scsh installskills sets that up
+# there); it lives here purely for in-repo sanity and to spare models false positives over
+# untracked scratch files.
+tmp/

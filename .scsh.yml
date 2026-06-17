@@ -1,0 +1,48 @@
+# .scsh.yml — beautiful-skills: a source repo of standalone coding-agent skills.
+#
+# Install into any repository with one command:
+#   scsh installskills https://github.com/dkorolev/beautiful-skills
+# That copies each skill into the target's .skills/, wires the per-harness discovery
+# symlinks (.claude/skills, .codex/skills, .cursor/skills, ...), gitignores tmp/, and merges
+# these entries into the target's own .scsh.yml. So this repo ships no symlinks itself — scsh
+# does that heavy lifting in the consumer; it keeps a local tmp/ .gitignore only for in-repo sanity.
+#
+# Each skill sits under its OWN profile, so a bare `scsh run` is a no-op (it just lists the
+# profiles); run one explicitly with `scsh run <skill>`. Skills-only manifest: scsh supplies
+# the base image, so there are no version/project/image headers. Each `result` is the report
+# the skill writes under the gitignored tmp/.
+
+skills:
+  big-beautiful-build:
+    harness: opencode
+    model: openai/gpt-5.5
+    timeout: 1200
+    profile: big-beautiful-build
+    result: tmp/big-beautiful-build.md
+  fast-beautiful-forward:
+    harness: opencode
+    model: openai/gpt-5.5
+    timeout: 1200
+    profile: fast-beautiful-forward
+    result: tmp/fast-beautiful-forward.md
+  code-beautiful-review:
+    harness: opencode
+    model: openai/gpt-5.5
+    timeout: 1200
+    profile: code-beautiful-review
+    result: tmp/code-beautiful-review.md
+  prepare-beautiful-pr:
+    harness: opencode
+    model: openai/gpt-5.5
+    timeout: 1200
+    profile: prepare-beautiful-pr
+    result: tmp/prepare-beautiful-pr.md
+  # Authoring-only family auditor. NEVER installed into a target repo: excluded both by its
+  # `internal-` name and by an explicit `autoinstall: false`. Run with `scsh run --profile internal-self-check`.
+  internal-self-check-beautiful-skills:
+    harness: opencode
+    model: openai/gpt-5.5
+    timeout: 600
+    profile: internal-self-check
+    autoinstall: false
+    result: tmp/internal-self-check-beautiful-skills.json
