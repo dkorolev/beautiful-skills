@@ -24,7 +24,7 @@ When you edit a skill, check it against the rules below to confirm it still hono
 
 - Anything a skill writes **back into the repository** as scratch — intermediate output, logs, generated artifacts that are not part of the deliverable — goes under `tmp/`, so it stays gitignored and is never committed by accident. Respect the repository's root `.gitignore`.
 
-- The deliverable itself (the code, demo, README, and tests the skill produces) is **not** scratch — it lands where it belongs in the repository. The exception to this rule is is the deliverable of a skill is to be consumer by another skill, and is not meant to be committed — in which case it should go under `tmp/` of the repo as instructed.
+- The deliverable itself (the code, demo, README, and tests the skill produces) is **not** scratch — it lands where it belongs in the repository. The exception to this rule is when the deliverable of a skill is to be consumed by another skill, and is not meant to be committed — in which case it should go under `tmp/` of the repo as instructed.
 
 Skills should be designed to not conflict with one another, so what a file or a directory is created under `tmp/`, it should follow some convention, such as `{purpose}-{YYYYMMDD}-{HHMMSS}-{random}`, where `random` is perhaps six random lowercase Latin characters. For programmatic chaining of skills, the skill may request to have the output artefact name provided to it from the outside, as the parameter, or as an environmental variable.
 
