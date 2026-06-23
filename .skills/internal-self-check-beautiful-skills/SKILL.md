@@ -1,6 +1,6 @@
 ---
 name: internal-self-check-beautiful-skills
-description: Authoring-only meta-check for the beautiful-skills repo. Reads PRINCIPLES.md, the .scsh.yml manifest, and every shipped skill's SKILL.md, then verifies the manifest is complete and each skill is self-contained and faithfully restates the principles in PRINCIPLES.md. It is not a shipped family skill and is never copied to a target repo (its internal- name and its autoinstall: false both exclude it); run it with `scsh run --profile internal-self-check`.
+description: "Authoring-only meta-check for the beautiful-skills repo. Reads PRINCIPLES.md, the .scsh.yml manifest, and every shipped skill's SKILL.md, then verifies the manifest is complete and each skill is self-contained and faithfully restates the principles in PRINCIPLES.md. It is not a shipped family skill and is never copied to a target repo (its internal- name and its autoinstall: false both exclude it); run it with `scsh run --profile internal-self-check`."
 ---
 
 # Self-Check: beautiful-skills

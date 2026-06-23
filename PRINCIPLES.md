@@ -14,6 +14,8 @@ When you edit a skill, check it against the rules below to confirm it still hono
 
 - Each skill is an AI-Assisted Coding Agent Skill defined by a `SKILL.md` with valid YAML frontmatter containing at least `name` and `description`.
 
+- Every YAML block in a skill — frontmatter and any fenced `yaml` examples — MUST parse as valid YAML. Prefer double-quoted strings for long scalar values (especially `description`); unquoted text that contains a colon followed by a space (`: `) will break strict parsers such as GitHub's.
+
 - `name` MUST exactly match the skill's directory name.
 
 - The `description` MUST state what the skill does and when it should trigger, so the harness invokes it for the right request.
