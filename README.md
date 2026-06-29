@@ -24,7 +24,7 @@ Each skill sits under its own profile in `.scsh.yml`, so a bare `scsh run` is a 
 
 - **the-beautiful-loop** — loops after `code-beautiful-review`: fixes every important cluster, commits, re-runs `prepare-beautiful-pr` and `code-beautiful-review` until the fleet passes a strict score bar (all routes succeeded, only excellent/good, mean ≥ 4.5). Never pushes or opens the PR.
 
-- **prepare-beautiful-pr** — run after a feature is built to get the branch PR-ready: confirms a clean, non-main branch stacked on main (pointing you at `fast-beautiful-forward` otherwise), offers to factor oversized or mixed commits into focused ones while keeping the final tree byte-identical, then writes `PR-DESCRIPTION.md` and commits it as the special notes author. Never pushes or opens the PR.
+- **prepare-beautiful-pr** — run after a feature is built to get the branch PR-ready: confirms a clean, non-main branch stacked on main (pointing you at `fast-beautiful-forward` otherwise), offers to factor oversized or mixed commits into focused ones while keeping the code tree byte-identical, ensures `PR-DESCRIPTION.md` is the unique last commit, then writes or updates it using a BLUF `Summary`, `What This Changes`, and `Implementation Details` shape (no separate test plan) and commits it as the special notes author. Never pushes or opens the PR.
 
 - **send-beautiful-pr** — after `prepare-beautiful-pr`: audits commit authorship, drops the local Elon Presley notes commit from what gets pushed, strips `Co-authored-by` trailers (with explicit user approval when needed), pushes the branch for the first time, and opens the PR with `PR-DESCRIPTION.md` as the body.
 
