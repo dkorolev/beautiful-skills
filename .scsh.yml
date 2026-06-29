@@ -37,6 +37,18 @@ skills:
     timeout: 1200
     profile: prepare-beautiful-pr
     result: tmp/prepare-beautiful-pr.md
+  the-beautiful-loop:
+    harness: opencode
+    model: openai/gpt-5.5
+    timeout: 1200
+    profile: the-beautiful-loop
+    result: tmp/the-beautiful-loop.md
+  send-beautiful-pr:
+    harness: opencode
+    model: openai/gpt-5.5
+    timeout: 1200
+    profile: send-beautiful-pr
+    result: tmp/send-beautiful-pr.md
   # Authoring-only family auditor. NEVER installed into a target repo: excluded both by its
   # `internal-` name and by an explicit `autoinstall: false`. Run with `scsh run --profile internal-self-check`.
   internal-self-check-beautiful-skills:

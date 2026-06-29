@@ -20,9 +20,13 @@ Each skill sits under its own profile in `.scsh.yml`, so a bare `scsh run` is a 
 
 - **fast-beautiful-forward** — rebases your branch's local commits onto the freshest main of a real remote upstream, so a pull request opened later is a clean fast-forward. Resolves only the conflicts it is certain about and asks about the rest one at a time, and never pushes or opens the PR.
 
-- **code-beautiful-review** — runs the scsh `code-review` reviewer fleet over the branch, then turns the scattered findings into one per-reviewer summary table and a handful of labeled clusters (A, B, C, ...) for you to open.
+- **code-beautiful-review** — runs the scsh `code-review` reviewer fleet over the branch against local `main`/`master` (no fetch required), then turns the scattered findings into one per-reviewer summary table and clusters important findings separately from stylistic comments.
+
+- **the-beautiful-loop** — loops after `code-beautiful-review`: fixes every important cluster, commits, re-runs `prepare-beautiful-pr` and `code-beautiful-review` until the fleet passes a strict score bar (all routes succeeded, only excellent/good, mean ≥ 4.5). Never pushes or opens the PR.
 
 - **prepare-beautiful-pr** — run after a feature is built to get the branch PR-ready: confirms a clean, non-main branch stacked on main (pointing you at `fast-beautiful-forward` otherwise), offers to factor oversized or mixed commits into focused ones while keeping the final tree byte-identical, then writes `PR-DESCRIPTION.md` and commits it as the special notes author. Never pushes or opens the PR.
+
+- **send-beautiful-pr** — after `prepare-beautiful-pr`: audits commit authorship, drops the local Elon Presley notes commit from what gets pushed, strips `Co-authored-by` trailers (with explicit user approval when needed), pushes the branch for the first time, and opens the PR with `PR-DESCRIPTION.md` as the body.
 
 Each skill declares a `result` report that it writes under the gitignored `tmp/` (`tmp/<skill>.md`).
 
