@@ -20,7 +20,7 @@ scsh installskills --global https://github.com/dkorolev/code-review-skills
 
 ## 1. Preconditions — check FIRST; if any fails, stop and say exactly how to fix it
 
-- **scsh is installed:** `command -v scsh`. If it is missing, tell the user to run `cargo install scsh` (see https://github.com/dkorolev/scsh for details) and stop — do not improvise a review by hand.
+- **scsh is installed, and new enough for global skills (1.25+):** `command -v scsh && scsh help installskills 2>&1 | grep -q -- --global`. If either check fails, tell the user to run `cargo install scsh` (installs or upgrades; see https://github.com/dkorolev/scsh for details) and stop — do not improvise a review by hand.
 
 - **The `code-review` profile resolves and is non-empty:**
 
