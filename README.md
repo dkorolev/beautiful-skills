@@ -6,7 +6,12 @@ This repository is the **authoring home** for a small family of self-contained, 
 
 ```sh
 cargo install scsh
-scsh installskills --global https://github.com/dkorolev/beautiful-skills https://github.com/dkorolev/code-review-skills
+```
+
+```sh
+scsh installskills --global \
+  https://github.com/dkorolev/beautiful-skills \
+  https://github.com/dkorolev/code-review-skills
 ```
 
 That is the whole setup. `scsh installskills --global` (scsh 1.25+) installs this family and the five-reviewer fleet machine-wide: the skills land under `~/.scsh/.skills/`, their profiles merge into the **global manifest** `~/.scsh/.scsh.yml`, and every skill is symlinked into the user-level skills dir of each coding agent already present on the machine (`~/.claude/skills`, `~/.cursor/skills`, `~/.codex/skills`, ...). From then on the skills work in **any** git repository — `/code-gorgeous-review` runs `scsh run code-review`, which resolves the profile from the repo's own `.scsh.yml` when it declares it and from the global manifest otherwise — and no `.scsh.yml` or `.skills/` ever lands in the reviewed repo.
