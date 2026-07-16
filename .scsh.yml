@@ -32,7 +32,10 @@ skills:
     model: gpt-5.6-terra
     effort: high
     timeout: 1200
-    profile: code-gorgeous-review
+    # Keep the agent-facing wrapper out of the reviewer fleet's code-gorgeous-review profile.
+    # Humans normally invoke this skill as /code-gorgeous-review; this distinct profile is
+    # available only for callers that explicitly want scsh to launch the wrapper itself.
+    profile: code-gorgeous-review-driver
     result: tmp/code-gorgeous-review.md
   prepare-gorgeous-pr:
     harness: codex

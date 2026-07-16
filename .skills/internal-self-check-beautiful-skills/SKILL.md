@@ -1,6 +1,6 @@
 ---
 name: internal-self-check-beautiful-skills
-description: "Authoring-only meta-check for the beautiful-skills repo. Reads PRINCIPLES.md, the .scsh.yml manifest, and every shipped skill's SKILL.md, then verifies the manifest is complete and each skill is self-contained and faithfully restates the principles in PRINCIPLES.md. It is not a shipped family skill and is never copied to a target repo (its internal- name and its autoinstall: false both exclude it); run it with `scsh run --profile internal-self-check`."
+description: "Authoring-only meta-check for the beautiful-skills repo. Reads PRINCIPLES.md, the .scsh.yml manifest, and every shipped skill's SKILL.md, then verifies the manifest is complete and each skill is self-contained and faithfully restates the principles in PRINCIPLES.md. It is not a shipped family skill and is never copied to a target repo (its internal- name and its autoinstall: false both exclude it); run it with `scsh run --profile internal-self-check`. It also verifies that code-gorgeous-review uses its non-recursive code-gorgeous-review-driver profile."
 ---
 
 # Self-Check: beautiful-skills
@@ -21,7 +21,7 @@ You are authoring-only: you live in this repo, are never copied to a target repo
 
 ## What you check
 
-**Manifest (section 6).** `.scsh.yml` is skills-only — no `version`, `project`, or `image` headers. Its `skills:` section has exactly one entry per `.skills/<name>/` directory (each keyed by a `name` that matches its directory), plus your own `internal-self-check-beautiful-skills` entry. No skill directory is missing; no listed name lacks a directory. Each shipped skill entry declares `harness`, `model`, `timeout`, its own `profile: <name>`, and `result: tmp/<name>.md`; your entry carries the same `harness`/`model`/`timeout`, plus `profile: internal-self-check`, `result: tmp/internal-self-check-beautiful-skills.json`, and `autoinstall: false`.
+**Manifest (section 6).** `.scsh.yml` is skills-only — no `version`, `project`, or `image` headers. Its `skills:` section has exactly one entry per `.skills/<name>/` directory (each keyed by a `name` that matches its directory), plus your own `internal-self-check-beautiful-skills` entry. No skill directory is missing; no listed name lacks a directory. Each shipped skill entry declares `harness`, `model`, `timeout`, its own `profile: <name>`, and `result: tmp/<name>.md`, except that `code-gorgeous-review` declares `profile: code-gorgeous-review-driver` so the wrapper stays out of the reviewer fleet's `code-gorgeous-review` profile; your entry carries the same `harness`/`model`/`timeout`, plus `profile: internal-self-check`, `result: tmp/internal-self-check-beautiful-skills.json`, and `autoinstall: false`.
 
 **Each shipped skill (the top rules and sections 1-5).** For every listed skill except yourself:
 
