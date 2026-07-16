@@ -6,16 +6,12 @@ This repository is the **authoring home** for a small family of self-contained, 
 
 ```sh
 cargo install scsh
-scsh installskills --global
-```
-
-That is the whole setup. scsh (1.25+) bundles this family and its reviewer fleet, and `installskills --global` installs everything machine-wide: the skills land under `~/.scsh/.skills/`, their profiles merge into the **global manifest** `~/.scsh/.scsh.yml`, and every skill is symlinked into the user-level skills dir of each coding agent already present on the machine (`~/.claude/skills`, `~/.cursor/skills`, `~/.codex/skills`, ...). From then on `/code-beautiful-review` works in **any** git repository: `scsh run code-review` resolves the profile from the repo's own `.scsh.yml` when it declares it, and from the global manifest otherwise — no `.scsh.yml` or `.skills/` ever lands in the reviewed repo.
-
-To track this repository fresher than the copy bundled with your scsh build, install straight from the sources instead (same command, same layout):
-
-```sh
 scsh installskills --global https://github.com/dkorolev/beautiful-skills https://github.com/dkorolev/code-review-skills
 ```
+
+That is the whole setup. `scsh installskills --global` (scsh 1.25+) installs this family and the five-reviewer fleet machine-wide: the skills land under `~/.scsh/.skills/`, their profiles merge into the **global manifest** `~/.scsh/.scsh.yml`, and every skill is symlinked into the user-level skills dir of each coding agent already present on the machine (`~/.claude/skills`, `~/.cursor/skills`, `~/.codex/skills`, ...). From then on the skills work in **any** git repository — `/code-gorgeous-review` runs `scsh run code-review`, which resolves the profile from the repo's own `.scsh.yml` when it declares it and from the global manifest otherwise — and no `.scsh.yml` or `.skills/` ever lands in the reviewed repo.
+
+**Why `-gorgeous-`?** The scsh binary bundles an older snapshot of this family under the original `-beautiful-` names (that is what a bare `scsh installskills --global`, with no URLs, installs). This repository's shipped skills are TEMPORARILY named `-gorgeous-` (`big-beautiful-build` keeps its name) so the fresh, from-source family installs and runs alongside the bundled one without any name collisions — in the global manifest, in the agents' skills dirs, and in repos that already carry `-beautiful-` installs.
 
 ## Per-repo install with `scsh` (optional)
 
@@ -33,15 +29,15 @@ Each skill sits under its own profile in `.scsh.yml`, so a bare `scsh run` is a 
 
 - **big-beautiful-build** — one-shot feature factory. Asks once for the full feature description, then delivers working code, a runnable demo, a README, and passing tests, filling every gap with a documented assumption rather than another question.
 
-- **fast-beautiful-forward** — rebases your branch's local commits onto the freshest main of a real remote upstream, so a pull request opened later is a clean fast-forward. Resolves only the conflicts it is certain about and asks about the rest one at a time, and never pushes or opens the PR.
+- **fast-gorgeous-forward** — rebases your branch's local commits onto the freshest main of a real remote upstream, so a pull request opened later is a clean fast-forward. Resolves only the conflicts it is certain about and asks about the rest one at a time, and never pushes or opens the PR.
 
-- **code-beautiful-review** — runs the scsh `code-review` reviewer fleet (resolved from the repo's own `.scsh.yml` or the global manifest — nothing installed into the target repo) over the branch against local `main`/`master` (no fetch required), then turns the scattered findings into one per-reviewer summary table and clusters important findings separately from stylistic comments.
+- **code-gorgeous-review** — runs the scsh `code-review` reviewer fleet (resolved from the repo's own `.scsh.yml` or the global manifest — nothing installed into the target repo) over the branch against local `main`/`master` (no fetch required), then turns the scattered findings into one per-reviewer summary table and clusters important findings separately from stylistic comments.
 
-- **the-beautiful-loop** — loops after `code-beautiful-review`: fixes every important cluster, commits, re-runs `prepare-beautiful-pr` and `code-beautiful-review` until the fleet passes a strict score bar (all routes succeeded, only excellent/good, mean ≥ 4.5). Reviews and fixes run against a base pinned once at the start — the loop never gates an iteration on sitting atop the freshest main; rebasing (`fast-beautiful-forward`) is a single step after it converges. Never pushes or opens the PR.
+- **the-gorgeous-loop** — loops after `code-gorgeous-review`: fixes every important cluster, commits, re-runs `prepare-gorgeous-pr` and `code-gorgeous-review` until the fleet passes a strict score bar (all routes succeeded, only excellent/good, mean ≥ 4.5). Reviews and fixes run against a base pinned once at the start — the loop never gates an iteration on sitting atop the freshest main; rebasing (`fast-gorgeous-forward`) is a single step after it converges. Never pushes or opens the PR.
 
-- **prepare-beautiful-pr** — run after a feature is built to get the branch PR-ready: confirms a clean, non-main branch stacked on main (pointing you at `fast-beautiful-forward` otherwise), offers to factor oversized or mixed commits into focused ones while keeping the code tree byte-identical, ensures `PR-DESCRIPTION.md` is the unique last commit, then writes or updates it using a BLUF `Summary`, `What This Changes`, and `Implementation Details` shape (no separate test plan) and commits it as the special notes author. Never pushes or opens the PR.
+- **prepare-gorgeous-pr** — run after a feature is built to get the branch PR-ready: confirms a clean, non-main branch stacked on main (pointing you at `fast-gorgeous-forward` otherwise), offers to factor oversized or mixed commits into focused ones while keeping the code tree byte-identical, ensures `PR-DESCRIPTION.md` is the unique last commit, then writes or updates it using a BLUF `Summary`, `What This Changes`, and `Implementation Details` shape (no separate test plan) and commits it as the special notes author. Never pushes or opens the PR.
 
-- **send-beautiful-pr** — after `prepare-beautiful-pr`: audits commit authorship, drops the local Elon Presley notes commit from what gets pushed, strips `Co-authored-by` trailers (with explicit user approval when needed), pushes the branch for the first time, and opens the PR with `PR-DESCRIPTION.md` as the body.
+- **send-gorgeous-pr** — after `prepare-gorgeous-pr`: audits commit authorship, drops the local Elon Presley notes commit from what gets pushed, strips `Co-authored-by` trailers (with explicit user approval when needed), pushes the branch for the first time, and opens the PR with `PR-DESCRIPTION.md` as the body.
 
 Each skill declares a `result` report that it writes under the gitignored `tmp/` (`tmp/<skill>.md`).
 

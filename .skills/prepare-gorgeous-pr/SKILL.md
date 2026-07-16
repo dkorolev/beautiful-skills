@@ -1,9 +1,9 @@
 ---
-name: prepare-beautiful-pr
-description: "Run after a feature is built (for example with big-beautiful-build) to get the branch PR-ready. Confirms you are on a clean, non-default branch whose commits sit on top of main (and tells you to run /fast-beautiful-forward first if they do not), thoroughly analyzes the commit structure and OFFERS to factor oversized or mixed commits into several focused ones while keeping the code tree byte-identical, ensures PR-DESCRIPTION.md is the unique last commit, then writes or updates PR-DESCRIPTION.md using a BLUF Summary, What This Changes, and Implementation Details shape (no separate test plan) and commits it as the special PR-notes author Elon Presley. It never pushes and never opens the PR. Use when the user invokes prepare-beautiful-pr, /prepare-beautiful-pr, or asks to shape a branch and write its PR description."
+name: prepare-gorgeous-pr
+description: "Run after a feature is built (for example with big-beautiful-build) to get the branch PR-ready. Confirms you are on a clean, non-default branch whose commits sit on top of main (and tells you to run /fast-gorgeous-forward first if they do not), thoroughly analyzes the commit structure and OFFERS to factor oversized or mixed commits into several focused ones while keeping the code tree byte-identical, ensures PR-DESCRIPTION.md is the unique last commit, then writes or updates PR-DESCRIPTION.md using a BLUF Summary, What This Changes, and Implementation Details shape (no separate test plan) and commits it as the special PR-notes author Elon Presley. It never pushes and never opens the PR. Use when the user invokes prepare-gorgeous-pr, /prepare-gorgeous-pr, or asks to shape a branch and write its PR description."
 ---
 
-# prepare-beautiful-pr — shape the commits, then write the PR description
+# prepare-gorgeous-pr — shape the commits, then write the PR description
 
 The contract:
 
@@ -17,7 +17,7 @@ The contract:
 
 - **Not on the default branch.** Determine the default branch (assume `main`, fall back to `master`). If HEAD is on it, stop: a PR needs a feature branch, not main.
 
-- **Commits on top of main.** Pick the base — the default branch, preferring `origin/main` when a remote exists, otherwise local `main` — and require that the base is an ancestor of HEAD with at least one commit in `base..HEAD`. If there are no commits on top of the base, there is nothing to prepare; stop. If the base is NOT an ancestor (the branch has diverged from main or sits behind it), stop and tell the user to run `/fast-beautiful-forward` first, so the branch is rebased into a clean, fast-forwardable stack on top of the freshest main.
+- **Commits on top of main.** Pick the base — the default branch, preferring `origin/main` when a remote exists, otherwise local `main` — and require that the base is an ancestor of HEAD with at least one commit in `base..HEAD`. If there are no commits on top of the base, there is nothing to prepare; stop. If the base is NOT an ancestor (the branch has diverged from main or sits behind it), stop and tell the user to run `/fast-gorgeous-forward` first, so the branch is rebased into a clean, fast-forwardable stack on top of the freshest main.
 
 ## 2. Analyze the commits, and offer to factor them down
 
@@ -27,7 +27,7 @@ The contract:
 
 - If any commit is oversized, or groups separate things together, you MUST OFFER to factor the change into several focused commits. Lay out concretely how you would split it — the proposed commits, in order, each a single logical unit — and ask the user whether to proceed. If the user declines, leave the commits as they are and go to step 3.
 
-- If the user agrees, split the work into several commits, each a coherent logical unit in a sensible order. Also do this reshaping if `PR-DESCRIPTION.md` already appears in the branch history but is absent from the last notes commit, bundled into a code commit, or appears in more than one commit. The one ironclad rule: **the final state of the code MUST stay byte-identical.** Before you start, save a backup ref (a branch such as `prepare-beautiful-pr-backup-<YYYYMMDD>-<HHMMSS>`). A safe, non-interactive way to re-partition is to soft-reset to the base (`git reset --soft <base>`, which keeps the whole change staged), then unstage and re-commit the code change in logical units — by path, or by applying crafted patches for finer-grained splits — while keeping `PR-DESCRIPTION.md` out of every code commit. When done, VERIFY the code tree is unchanged from the backup while ignoring the notes file: `git diff <backup> HEAD -- . ':(exclude)PR-DESCRIPTION.md'` MUST be empty. Only ever reshape your branch's own not-yet-shared commits; never rewrite commits that already exist on the base, and keep the stack fast-forwardable.
+- If the user agrees, split the work into several commits, each a coherent logical unit in a sensible order. Also do this reshaping if `PR-DESCRIPTION.md` already appears in the branch history but is absent from the last notes commit, bundled into a code commit, or appears in more than one commit. The one ironclad rule: **the final state of the code MUST stay byte-identical.** Before you start, save a backup ref (a branch such as `prepare-gorgeous-pr-backup-<YYYYMMDD>-<HHMMSS>`). A safe, non-interactive way to re-partition is to soft-reset to the base (`git reset --soft <base>`, which keeps the whole change staged), then unstage and re-commit the code change in logical units — by path, or by applying crafted patches for finer-grained splits — while keeping `PR-DESCRIPTION.md` out of every code commit. When done, VERIFY the code tree is unchanged from the backup while ignoring the notes file: `git diff <backup> HEAD -- . ':(exclude)PR-DESCRIPTION.md'` MUST be empty. Only ever reshape your branch's own not-yet-shared commits; never rewrite commits that already exist on the base, and keep the stack fast-forwardable.
 
 ## 3. Write PR-DESCRIPTION.md and commit it as the special author
 
@@ -73,7 +73,7 @@ The contract:
 
 ## 4. Report
 
-- Print the final commit list for `base..HEAD` (one line each), state plainly that the code's final state is unchanged from before any reshaping (the verified empty code-tree diff), show `PR-DESCRIPTION.md`, and note that it was committed by Elon Presley as the unique last notes commit. Remind the user that nothing was pushed and that opening the PR is a separate, later step they trigger. Write this same report to `tmp/prepare-beautiful-pr.md`.
+- Print the final commit list for `base..HEAD` (one line each), state plainly that the code's final state is unchanged from before any reshaping (the verified empty code-tree diff), show `PR-DESCRIPTION.md`, and note that it was committed by Elon Presley as the unique last notes commit. Remind the user that nothing was pushed and that opening the PR is a separate, later step they trigger. Write this same report to `tmp/prepare-gorgeous-pr.md`.
 
 ## Safety and scope
 
