@@ -47,7 +47,7 @@ Build the same invocation table `code-gorgeous-review` uses: one row per configu
 
 **Stop — declare done — when ALL of the following hold:**
 
-1. **No failures.** Every invocation that scsh attempted produced a result JSON. Rows marked `FAILED` (ran but no JSON) block stopping. `SKIPPED` rows (harness/model unavailable) do not count toward the score but also do not count as successes — if any configured route was skipped because it was unavailable at run time, treat the round as incomplete and continue fixing; only stop when every route that *can* run did run and succeeded.
+1. **No failures among the routes that ran.** Every invocation that scsh attempted produced a result JSON; rows marked `FAILED` (ran but no JSON) block stopping. `SKIPPED` rows (harness/model unavailable on this host) are excluded from the bar entirely — the bar applies to the routes that actually ran, so a machine that has only some of the matrix's harnesses (say claude and codex, but no cursor) still converges instead of treating every round as incomplete. At least one route must have run; if every route was skipped, stop and tell the user to log in to at least one agent CLI.
 
 2. **Only good or excellent.** Every successful result has `grade` ∈ `{excellent, good}`. Any `average` or `poor` blocks stopping.
 
