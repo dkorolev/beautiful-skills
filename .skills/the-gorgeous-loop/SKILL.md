@@ -1,6 +1,6 @@
 ---
 name: the-gorgeous-loop
-description: "Loops after code-gorgeous-review: applies clustered review fixes (logged in tmp/the-gorgeous-loop-fixes.md, never committed), commits (amending or reshaping when sensible), re-runs prepare-gorgeous-pr and code-gorgeous-review until every reviewer succeeds with only excellent or good grades, more excellent than good, and a mean score of 4.5 or above (excellent=5, good=4). Reviews run against the local base with nothing installed into the target repo (scsh resolves the code-review profile from the repo's .scsh.yml or the global manifest); rebasing onto the freshest upstream main is deferred until after the loop converges. Respects prior fixes, human guidance, and repo maxims. Use when the user invokes the-gorgeous-loop, /the-gorgeous-loop, or asks to keep fixing review findings until the fleet passes."
+description: "Loops after code-gorgeous-review: applies clustered review fixes (logged in tmp/the-gorgeous-loop-fixes.md, never committed), commits (amending or reshaping when sensible), re-runs prepare-gorgeous-pr and code-gorgeous-review until every reviewer succeeds with only excellent or good grades, more excellent than good, and a mean score of 4.5 or above (excellent=5, good=4). Reviews run against the local base with nothing installed into the target repo (scsh resolves the code-gorgeous-review profile from the repo's .scsh.yml or the global manifest); rebasing onto the freshest upstream main is deferred until after the loop converges. Respects prior fixes, human guidance, and repo maxims. Use when the user invokes the-gorgeous-loop, /the-gorgeous-loop, or asks to keep fixing review findings until the fleet passes."
 ---
 
 # the-gorgeous-loop — fix review clusters, then loop until the fleet passes
@@ -13,7 +13,7 @@ This is the step **after** `/code-gorgeous-review` (and any human follow-up). It
 
 ## Pairing with `/code-gorgeous-review`
 
-All fleet runs go through the **code-gorgeous-review** skill. It drives plain `scsh run code-review` — scsh resolves the profile from this repo's `.scsh.yml` or from the machine-wide manifest installed by `scsh installskills --global <sources>`, and injects the reviewer skill bodies into the run clone only. Do **not** drive scsh yourself outside that skill, and do **not** install skills into the target repo as a fallback. When this skill says "re-run the review," it means: read and follow **code-gorgeous-review** end-to-end.
+All fleet runs go through the **code-gorgeous-review** skill. It drives plain `scsh run code-gorgeous-review` — scsh resolves the exact new profile from this repo's `.scsh.yml` or from the machine-wide manifest installed by `scsh installskills --global <sources>`, so an older repo-local `code-review` profile cannot intercept the run. scsh injects the reviewer skill bodies into the run clone only. Do **not** drive scsh yourself outside that skill, and do **not** install skills into the target repo as a fallback. When this skill says "re-run the review," it means: read and follow **code-gorgeous-review** end-to-end.
 
 ## The base is pinned once — no per-iteration freshness gate
 
@@ -41,7 +41,7 @@ Before fixing anything, load the **most recent** review round:
 - Prefer the JSON result files from the last `/code-gorgeous-review` run (`tmp/code-review-*.json`, relative to wherever the fleet ran — usually this repo).
 - Fall back to `tmp/code-gorgeous-review.md` if JSON is incomplete.
 
-Build the same invocation table `code-gorgeous-review` uses: one row per configured invocation in the `code-review` profile (five reviewers times the manifest's model routes — up to fifteen with the stock three-route matrix).
+Build the same invocation table `code-gorgeous-review` uses: one row per configured invocation in the `code-gorgeous-review` profile (five reviewers times the manifest's model routes — up to fifteen with the stock three-route matrix).
 
 **Grade scores:** `excellent = 5`, `good = 4`, `average = 3`, `poor = 2`.
 

@@ -1,17 +1,17 @@
 ---
 name: code-gorgeous-review
-description: "Runs the scsh `code-review` profile — resolved from the target repo's own .scsh.yml or, when it is not declared there, from the machine-wide manifest installed by `scsh installskills --global` — over the current branch against local main/master or a local base the user names, without writing anything into the target repo. Reads every reviewer's result, prints a one-row-per-invocation summary table, and clusters important findings separately from stylistic comments. Read-only: it never edits code, pushes, or opens a PR. Use when the user invokes code-gorgeous-review, /code-gorgeous-review, or asks to run the gorgeous code review."
+description: "Runs the scsh `code-gorgeous-review` profile — resolved from the target repo's own .scsh.yml or, when it is not declared there, from the machine-wide manifest installed by `scsh installskills --global` — over the current branch against local main/master or a local base the user names, without writing anything into the target repo. Reads every reviewer's result, prints a one-row-per-invocation summary table, and clusters important findings separately from stylistic comments. Read-only: it never edits code, pushes, or opens a PR. Use when the user invokes code-gorgeous-review, /code-gorgeous-review, or asks to run the gorgeous code review."
 ---
 
 # code-gorgeous-review — run the review fleet, then cluster the findings
 
 The contract:
 
-> **Confirm the `code-review` profile resolves (`scsh check-profile code-review`); review against local `main`/`master` or the local base the user names; run the fleet with plain `scsh run code-review`; wait for it; then report the important findings first and stylistic comments separately. Report only; change nothing. Never write `.scsh.yml` or `.skills/` into the target repo.**
+> **Confirm the `code-gorgeous-review` profile resolves (`scsh check-profile code-gorgeous-review`); review against local `main`/`master` or the local base the user names; run the fleet with plain `scsh run code-gorgeous-review`; wait for it; then report the important findings first and stylistic comments separately. Report only; change nothing. Never write `.scsh.yml` or `.skills/` into the target repo.**
 
 ## Where the profile comes from
 
-scsh resolves the `code-review` profile on its own: the target repo's `.scsh.yml` wins when it declares the profile; otherwise scsh falls back to the machine-wide manifest at `~/.scsh/.scsh.yml` (with a one-line note saying so). Either way the skill bodies are injected into the run clone only — the target repository never needs, and never receives, a `.scsh.yml` or `.skills/` of its own. The machine-wide manifest is a one-time setup:
+scsh resolves the `code-gorgeous-review` profile on its own: the target repo's `.scsh.yml` wins only when it declares that exact new profile; otherwise scsh falls back to the machine-wide manifest at `~/.scsh/.scsh.yml` (with a one-line note saying so). An older repo-local `code-review` profile is a different name and is therefore ignored. Either way the skill bodies are injected into the run clone only — the target repository never needs, and never receives, a `.scsh.yml` or `.skills/` of its own. The machine-wide manifest is a one-time setup:
 
 ```sh
 cargo install scsh
@@ -22,10 +22,10 @@ scsh installskills --global https://github.com/dkorolev/code-review-skills
 
 - **scsh is installed, and new enough for global skills (1.25+):** `command -v scsh && scsh help installskills 2>&1 | grep -q -- --global`. If either check fails, tell the user to run `cargo install scsh` (installs or upgrades; see https://github.com/dkorolev/scsh for details) and stop — do not improvise a review by hand.
 
-- **The `code-review` profile resolves and is non-empty:**
+- **The `code-gorgeous-review` profile resolves and is non-empty:**
 
   ```sh
-  scsh check-profile code-review
+  scsh check-profile code-gorgeous-review
   ```
 
   Exit 0 means scsh found the profile — in this repo's `.scsh.yml` or in the global manifest — with at least one skill. If non-zero, tell the user to run `scsh installskills --global https://github.com/dkorolev/code-review-skills` (scsh 1.25+) and stop. Do **not** run `scsh installskills` into the target repo.
@@ -58,14 +58,14 @@ Each reviewer diffs `origin/main..HEAD` inside its own clone, so make `origin/ma
 
 - Run in the directory you settled on in step 2 — this repo if local `main` already was exactly the chosen base, otherwise the prepared clone. Everything below happens there.
 
-- **Containers never fetch.** `scsh run code-review` bind-mounts a host-prepared clone into each container. The reviewer agents must not `git fetch`, `git pull`, or `git clone` — if a reviewer tries, that violates the skill contract. Missing refs are a host prep bug (step 2), not something to fix inside the container.
+- **Containers never fetch.** `scsh run code-gorgeous-review` bind-mounts a host-prepared clone into each container. The reviewer agents must not `git fetch`, `git pull`, or `git clone` — if a reviewer tries, that violates the skill contract. Missing refs are a host prep bug (step 2), not something to fix inside the container.
 
 - Record the starting point first: `git rev-parse HEAD` (so you can spot anything the run adds), and note the wall-clock start.
 
 - Run the reviewers and wait for completion, keeping the per-skill run dirs so you can time each one, and teeing the output to your own scratch dir:
 
   ```sh
-  SCSH_KEEP_RUNS=1 scsh run code-review 2>&1 \
+  SCSH_KEEP_RUNS=1 scsh run code-gorgeous-review 2>&1 \
     | tee tmp/code-gorgeous-review-<YYYYMMDD>-<HHMMSS>-<rand>/run.out
   ```
 
@@ -83,7 +83,7 @@ Each reviewer diffs `origin/main..HEAD` inside its own clone, so make `origin/ma
 
 ## 5. The summary table — one row per invocation
 
-Print a table with exactly these columns, one row per skill invocation in the `code-review` profile (up to fifteen with the stock three-route matrix):
+Print a table with exactly these columns, one row per skill invocation in the `code-gorgeous-review` profile (up to fifteen with the stock three-route matrix):
 
 | Reviewer | Model route | Duration | Rating | Issues |
 
