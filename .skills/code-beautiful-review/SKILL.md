@@ -1,39 +1,42 @@
 ---
 name: code-beautiful-review
-description: "Runs the scsh `code-review` profile (the reviewer fleet — up to ten invocations across GPT and Opus) over the current branch against local main/master or a local base the user names. Probes two model routes first and proceeds when at least one is available. Then reads every reviewer's result, prints a one-row-per-invocation summary table, and clusters important findings separately from stylistic comments. Read-only: it never edits code, pushes, or opens a PR. Use when the user invokes code-beautiful-review, /code-beautiful-review, or asks to run the beautiful code review."
+description: "Runs the scsh `code-review` profile — resolved from the target repo's own .scsh.yml or, when it is not declared there, from the machine-wide manifest installed by `scsh installskills --global` — over the current branch against local main/master or a local base the user names, without writing anything into the target repo. Reads every reviewer's result, prints a one-row-per-invocation summary table, and clusters important findings separately from stylistic comments. Read-only: it never edits code, pushes, or opens a PR. Use when the user invokes code-beautiful-review, /code-beautiful-review, or asks to run the beautiful code review."
 ---
 
 # code-beautiful-review — run the review fleet, then cluster the findings
 
 The contract:
 
-> **Probe two model routes (GPT, Opus) and stop only when neither is available; review against local `main`/`master` or the local base the user names; run the `code-review` fleet through scsh; wait for it; then report the important findings first and stylistic comments separately. Report only; change nothing.**
+> **Confirm the `code-review` profile resolves (`scsh check-profile code-review`); review against local `main`/`master` or the local base the user names; run the fleet with plain `scsh run code-review`; wait for it; then report the important findings first and stylistic comments separately. Report only; change nothing. Never write `.scsh.yml` or `.skills/` into the target repo.**
+
+## Where the profile comes from
+
+scsh resolves the `code-review` profile on its own: the target repo's `.scsh.yml` wins when it declares the profile; otherwise scsh falls back to the machine-wide manifest at `~/.scsh/.scsh.yml` (with a one-line note saying so). Either way the skill bodies are injected into the run clone only — the target repository never needs, and never receives, a `.scsh.yml` or `.skills/` of its own. The machine-wide manifest is a one-time setup:
+
+```sh
+cargo install scsh
+scsh installskills --global
+```
 
 ## 1. Preconditions — check FIRST; if any fails, stop and say exactly how to fix it
 
-- **scsh is installed:** `command -v scsh`. If it is missing, tell the user to install scsh (see https://github.com/dkorolev/scsh for details) and stop — do not improvise a review by hand.
+- **scsh is installed:** `command -v scsh`. If it is missing, tell the user to run `cargo install scsh` (see https://github.com/dkorolev/scsh for details) and stop — do not improvise a review by hand.
 
-- **The `code-review` profile exists and is non-empty:** run `scsh check-profile code-review` (exit 0 means the profile is present with at least one skill; this is runtime-free). If it is non-zero, tell the user to install the reviewers with `scsh installskills https://github.com/dimacurrentai/code-review-skills`, then stop.
+- **The `code-review` profile resolves and is non-empty:**
+
+  ```sh
+  scsh check-profile code-review
+  ```
+
+  Exit 0 means scsh found the profile — in this repo's `.scsh.yml` or in the global manifest — with at least one skill. If non-zero, tell the user to run `scsh installskills --global` (scsh 1.25+) and stop. Do **not** run `scsh installskills` into the target repo.
 
 - **Local git repo with a local base branch.** Do not require `origin`, do not require GitHub, do not fetch, and do not require local `main` to match any remote. Use local `main` as the default base, falling back to local `master`; if neither exists, stop and ask for the local branch/ref to compare against. If the user names a base branch/ref explicitly, honor it verbatim.
 
+- **`tmp/` must be gitignored** (scsh preflight). If it is not, stop and tell the user to add `/tmp` (or `tmp/`) to `.gitignore` and commit that — do not install skills.
+
 - **No PR-description gate.** Do not require `PR-DESCRIPTION.md`, do not read it as authoritative context, and do not complain if it is missing, stale, incomplete, or out of date. Review the code diff itself.
 
-- **At least one review model route is available.** Before spending time on base-pinning or a fleet run, probe the two routes configured in this repo's `.scsh.yml` (GPT via opencode, Opus via claude):
-
-  ```sh
-  [ -f ~/.zshrc ] && . ~/.zshrc 2>/dev/null || true
-  REVIEW_ROUTES_AVAILABLE=0
-  opencode_auth_ok() { test -f "${XDG_DATA_HOME:-$HOME/.local/share}/opencode/auth.json"; }
-  opencode_model_ok() { command -v opencode >/dev/null 2>&1 && opencode models 2>/dev/null | grep -qxF "$1"; }
-  claude_route_ok() { [ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ] || test -f "$HOME/.claude/.credentials.json"; }
-
-  if opencode_auth_ok && opencode_model_ok "openai/gpt-5.5"; then REVIEW_ROUTES_AVAILABLE=$((REVIEW_ROUTES_AVAILABLE + 1)); fi
-  if claude_route_ok; then REVIEW_ROUTES_AVAILABLE=$((REVIEW_ROUTES_AVAILABLE + 1)); fi
-  echo "review routes available: $REVIEW_ROUTES_AVAILABLE / 2"
-  ```
-
-  **Stop here** if `REVIEW_ROUTES_AVAILABLE` is `0` — no GPT or Opus route is usable on this host. Otherwise continue; scsh will skip N/A invocations and run the rest in parallel (up to ten when both routes probe ok: five reviewers × two models).
+- **Route availability is scsh's job — do not hand-roll auth checks.** `scsh run` probes every configured harness·model route itself, prints `⚠ skipping …` for each unavailable one, runs the rest in parallel, and fails only when none remain. If the run reports that every invocation was skipped, stop and tell the user to log in to at least one agent CLI on this host.
 
 - **Let scsh enforce its own runtime preflight only.** Do not add extra freshness, PR-shape, remote, or default-branch ancestry checks. If `scsh run` fails preflight, surface that message verbatim and stop.
 
@@ -59,29 +62,34 @@ Each reviewer diffs `origin/main..HEAD` inside its own clone, so make `origin/ma
 
 - Record the starting point first: `git rev-parse HEAD` (so you can spot anything the run adds), and note the wall-clock start.
 
-- Run the reviewers and wait for completion, keeping the per-skill run dirs so you can time each one, and teeing the output to your own scratch dir: `SCSH_KEEP_RUNS=1 scsh run code-review 2>&1 | tee tmp/code-beautiful-review-<YYYYMMDD>-<HHMMSS>-<rand>/run.out`. scsh runs every configured invocation in parallel (up to ten), each in its own ephemeral container on a clean clone of the branch, diffed against the base you pinned in step 2. Unavailable harnesses or models print `⚠ skipping …` and are not run.
+- Run the reviewers and wait for completion, keeping the per-skill run dirs so you can time each one, and teeing the output to your own scratch dir:
+
+  ```sh
+  SCSH_KEEP_RUNS=1 scsh run code-review 2>&1 \
+    | tee tmp/code-beautiful-review-<YYYYMMDD>-<HHMMSS>-<rand>/run.out
+  ```
+
+  scsh runs every configured invocation in parallel, each in its own ephemeral container on a clean clone of the branch, diffed against the base you pinned in step 2. Unavailable harnesses or models print `⚠ skipping …` and are not run.
 
 - Do **not** abort if `scsh run` exits non-zero. Every configured invocation is attempted; a non-zero exit means at least one reviewer failed to produce its result, but the others' results are still there. Collect what exists and mark the rest `FAILED` or `SKIPPED` in the table.
 
-- **Success for this skill:** you probed at least one model route in step 1, and after the run at least one reviewer invocation produced its result JSON. That is enough — you do not need all ten. If every invocation was skipped or failed, say so plainly and stop before clustering.
+- **Success for this skill:** after the run, at least one reviewer invocation produced its result JSON. That is enough — you do not need the full matrix. If every invocation was skipped or failed, say so plainly and stop before clustering.
 
 ## 4. Collect the output
 
-- The authoritative output is each reviewer's **result JSON**, which scsh copies back into the run directory on success (any prior file moved aside to `*.bak.<utc>`). Get the full invocation list and each declared `result` path from `scsh list` (or `.scsh.yml`) for the `code-review` profile — by convention `tmp/code-review-<invocation>.json` (for example `tmp/code-review-conventions-reviewer-opencode-gpt-5.5.json`, `tmp/code-review-sanity-reviewer-claude-opus-4-8.json`, …), relative to wherever the fleet ran (this repo, or the prepared clone). Each file has the shape `{ result: { grade, issues_found }, issues: [ { commit, file, line, description, suggestion } ] }`, where `grade` is one of `excellent | good | average | poor` and `issues_found` equals `issues.length`.
-
-- If the reviewers are configured for commit delivery (`commits: true` in `.scsh.yml`), the same findings also land as new commits authored by the dedicated review account — but only on the branch in whichever directory the fleet ran. When the fleet ran in place that is your branch (`git log <starting-HEAD>..HEAD` by that author); when it ran in the prepared clone those commits stay in the throwaway clone and never reach your branch, so rely on the JSON. Treat the JSON as the source of truth either way.
+- The authoritative output is each reviewer's **result JSON**, which scsh copies back into the run directory on success (any prior file moved aside to `*.bak.<utc>`). By convention the files are `tmp/code-review-<invocation>.json` (for example `tmp/code-review-conventions-reviewer-codex-terra.json`, `tmp/code-review-sanity-reviewer-claude-opus-4-8.json`, …), relative to wherever the fleet ran (this repo, or the prepared clone). The definitive invocation list is in the `scsh run` output you teed — one line per invocation, with `⚠ skipping …` marking the `SKIPPED` rows (when the profile lives in this repo's own `.scsh.yml`, `scsh list` shows the same list up front). Each file has the shape `{ result: { grade, issues_found }, issues: [ { commit, file, line, description, suggestion } ] }`, where `grade` is one of `excellent | good | average | poor` and `issues_found` equals `issues.length`.
 
 - **Per-reviewer duration:** from the kept run dirs (`SCSH_KEEP_RUNS=1` left them in the system temp dir as `scsh-*-run-<skill>/`), read each `tmp/scsh-run.log` and take its first-to-last timestamp. If a log is unavailable, report the overall wall-clock for the run and mark that reviewer's cell `n/a (parallel)`. Remove the kept run dirs once you have read them, and delete the prepared clone (if you made one) once you have collected its results.
 
 ## 5. The summary table — one row per invocation
 
-Print a table with exactly these columns, one row per skill invocation in the `code-review` profile (up to ten when both model routes are available):
+Print a table with exactly these columns, one row per skill invocation in the `code-review` profile (up to fifteen with the stock three-route matrix):
 
 | Reviewer | Model route | Duration | Rating | Issues |
 
-- **Reviewer** — the base reviewer (`conventions-reviewer`, `justification-reviewer`, …), parsed from the invocation name before the `-opencode-gpt-5.5` or `-claude-opus-4-8` suffix.
+- **Reviewer** — the base reviewer (`conventions-reviewer`, `justification-reviewer`, …), parsed from the invocation name before the route suffix.
 
-- **Model route** — `GPT-5.5` (`…-opencode-gpt-5.5`) or `Opus-4.8` (`…-claude-opus-4-8`).
+- **Model route** — the invocation-name suffix after the reviewer name, rendered readably: `codex-terra` as `Codex Terra`, `claude-opus-4-8` as `Opus-4.8`, `cursor-auto` as `Cursor Auto`, and so on for whatever routes the manifest declares.
 
 - **Duration** — its wall-clock from step 4.
 
@@ -93,7 +101,7 @@ A row whose harness was skipped by scsh is `SKIPPED` — say so rather than gues
 
 After the full table, print a short **per-reviewer rollup** for the five base reviewers: for each, list how many model routes ran, the issue counts per route, and the strictest grade seen across routes.
 
-Write the full summary — the route probe line from step 1, this table, the per-reviewer rollup, and the important/stylistic clusters from the next step — to `tmp/code-beautiful-review.md` in **this** repo (not the prepared clone, which is about to be deleted), so the run leaves a persistent report where the user will look for it. State at the top of the report which local base ref/SHA the review used and whether histories were related.
+Write the full summary — this table, the per-reviewer rollup, and the important/stylistic clusters from the next step — to `tmp/code-beautiful-review.md` in **this** repo (not the prepared clone, which is about to be deleted), so the run leaves a persistent report where the user will look for it. State at the top of the report which local base ref/SHA the review used and whether histories were related.
 
 ## 6. Filter and cluster the findings
 
@@ -107,4 +115,4 @@ Write the full summary — the route probe line from step 1, this table, the per
 
 ## Safety and scope
 
-- Read and report only. The prepared clone and all run scratch are throwaway under the gitignored `tmp/`; the scsh run is a local, sandboxed read of the branch. You take no outward action — never edit code, never commit findings, never push, never open or comment on a PR, and never fetch/pull as part of this skill. This repo's own working tree and refs are left exactly as you found them.
+- Read and report only. The prepared clone and all run scratch are throwaway under the gitignored `tmp/`; the scsh run is a local, sandboxed read of the branch. You take no outward action — never edit code, never commit findings, never push, never open or comment on a PR, and never fetch/pull as part of this skill. This repo's own working tree and refs are left exactly as you found them — **including never writing `.scsh.yml` or `.skills/` into it**.
