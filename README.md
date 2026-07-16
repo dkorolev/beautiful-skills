@@ -44,6 +44,8 @@ Each skill sits under its own profile in `.scsh.yml`, so a bare `scsh run` is a 
 
 - **send-gorgeous-pr** — after `prepare-gorgeous-pr`: audits commit authorship, drops the local Elon Presley notes commit from what gets pushed, strips `Co-authored-by` trailers (with explicit user approval when needed), pushes the branch for the first time, and opens the PR with `PR-DESCRIPTION.md` as the body.
 
+- **kickoff-gorgeous-pipeline** — the whole chain in one invocation: `fast-gorgeous-forward` first (the only interactive stage — upstream questions and rebase conflicts are settled with the user up front, and the local base branch is fast-forwarded to the same tip), then unattended to the end: `prepare-gorgeous-pr` with its commit-reshaping offer suppressed, one `code-gorgeous-review` round, and `the-gorgeous-loop` until the fleet passes the bar or a cluster is stuck three rounds. Never pushes — `send-gorgeous-pr` stays a separate human step.
+
 Each skill declares a `result` report that it writes under the gitignored `tmp/` (`tmp/<skill>.md`).
 
 ## Working on the skills
