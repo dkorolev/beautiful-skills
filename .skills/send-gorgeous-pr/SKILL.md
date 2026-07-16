@@ -1,15 +1,15 @@
 ---
-name: send-beautiful-pr
-description: "Opens a GitHub pull request for the current branch using PR-DESCRIPTION.md as the body. Requires a clean working tree, that prepare-beautiful-pr has already committed PR-DESCRIPTION.md, that tmp/the-beautiful-loop-fixes.md is not in the branch history, that the branch does not yet exist on the remote, and explicit user approval before reauthoring commits or stripping Co-authored-by trailers. Drops the local Elon Presley notes commit from the pushed history; pushes only commits authored as the authenticated GitHub user, then creates the PR with gh. Use when the user invokes send-beautiful-pr, /send-beautiful-pr, or asks to open or send the pull request."
+name: send-gorgeous-pr
+description: "Opens a GitHub pull request for the current branch using PR-DESCRIPTION.md as the body. Requires a clean working tree, that prepare-gorgeous-pr has already committed PR-DESCRIPTION.md, that tmp/the-gorgeous-loop-fixes.md is not in the branch history, that the branch does not yet exist on the remote, and explicit user approval before reauthoring commits or stripping Co-authored-by trailers. Drops the local Elon Presley notes commit from the pushed history; pushes only commits authored as the authenticated GitHub user, then creates the PR with gh. Use when the user invokes send-gorgeous-pr, /send-gorgeous-pr, or asks to open or send the pull request."
 ---
 
-# send-beautiful-pr — fix authorship, push the branch, open the PR
+# send-gorgeous-pr — fix authorship, push the branch, open the PR
 
 The contract:
 
 > **Audit every commit you are about to publish. Ask before rewriting history. Drop the Elon Presley notes commit from what gets pushed. Push only when authorship matches the GitHub user. Open the PR with PR-DESCRIPTION.md as the body.**
 
-This is the step **after** `/prepare-beautiful-pr`. That skill shapes the commits and writes `PR-DESCRIPTION.md` locally; this one cleans attribution, pushes, and sends the PR.
+This is the step **after** `/prepare-gorgeous-pr`. That skill shapes the commits and writes `PR-DESCRIPTION.md` locally; this one cleans attribution, pushes, and sends the PR.
 
 ## 1. Preconditions — check FIRST; if any fails, stop and say exactly how to fix it
 
@@ -21,7 +21,7 @@ This is the step **after** `/prepare-beautiful-pr`. That skill shapes the commit
 
 - **`PR-DESCRIPTION.md` exists at the repo root and is committed.** If it is missing from `HEAD`, stop and complain plainly:
 
-  > `PR-DESCRIPTION.md` is missing. Run `/prepare-beautiful-pr` or `/prepare-beautiful-pr` first — those skills write and commit the PR description; this skill only sends it.
+  > `PR-DESCRIPTION.md` is missing. Run `/prepare-gorgeous-pr` first — that skill writes and commits the PR description; this skill only sends it.
 
   Do not invent a description on the fly.
 
@@ -41,11 +41,11 @@ This is the step **after** `/prepare-beautiful-pr`. That skill shapes the commit
 
   Do not force-push. Do not update an existing remote branch.
 
-- **`tmp/the-beautiful-loop-fixes.md` must not be published.** This local fix log from `/the-beautiful-loop` must never reach the remote. If it is staged, stop and unstage it. If any commit in `base..HEAD` adds or modifies `tmp/the-beautiful-loop-fixes.md`, stop:
+- **`tmp/the-gorgeous-loop-fixes.md` must not be published.** This local fix log from `/the-gorgeous-loop` must never reach the remote. If it is staged, stop and unstage it. If any commit in `base..HEAD` adds or modifies `tmp/the-gorgeous-loop-fixes.md`, stop:
 
-  > `tmp/the-beautiful-loop-fixes.md` is in the branch history. It is local review scratch and must not be pushed. Remove it from the commits (rewrite local history) or drop those commits, then re-run this skill.
+  > `tmp/the-gorgeous-loop-fixes.md` is in the branch history. It is local review scratch and must not be pushed. Remove it from the commits (rewrite local history) or drop those commits, then re-run this skill.
 
-  Also fail if the file exists on disk but is tracked (`git ls-files --error-unmatch tmp/the-beautiful-loop-fixes.md` exits 0) — run `git rm --cached tmp/the-beautiful-loop-fixes.md` only after asking the user, since that rewrites the index.
+  Also fail if the file exists on disk but is tracked (`git ls-files --error-unmatch tmp/the-gorgeous-loop-fixes.md` exits 0) — run `git rm --cached tmp/the-gorgeous-loop-fixes.md` only after asking the user, since that rewrites the index.
 
 ## 2. Resolve the GitHub pusher identity
 
@@ -67,12 +67,12 @@ This is the step **after** `/prepare-beautiful-pr`. That skill shapes the commit
 Save the PR body now — you will need it even if the notes commit is dropped later:
 
 ```bash
-git show HEAD:PR-DESCRIPTION.md > tmp/send-beautiful-pr-body.md
+git show HEAD:PR-DESCRIPTION.md > tmp/send-gorgeous-pr-body.md
 ```
 
 (If `PR-DESCRIPTION.md` is not at `HEAD`, use the last commit in `base..HEAD` that contains it.)
 
-The notes-only author from `/prepare-beautiful-pr` — **must never be pushed**:
+The notes-only author from `/prepare-gorgeous-pr` — **must never be pushed**:
 
 ```
 NAME  = Elon Presley
@@ -87,7 +87,7 @@ Scan every commit in `base..HEAD`. For each, record:
 
 3. **Author mismatches to fix.** Any remaining commit whose `author name` / `author email` is not `<gh-name>` / `<gh-email>`, or whose committer identity is an agent/tool identity inconsistent with the GitHub user.
 
-4. **Fix log must not ship.** No commit in `base..HEAD` may touch `tmp/the-beautiful-loop-fixes.md`. If any does, include it in the audit and do not push until removed from history.
+4. **Fix log must not ship.** No commit in `base..HEAD` may touch `tmp/the-gorgeous-loop-fixes.md`. If any does, include it in the audit and do not push until removed from history.
 
 Build a concrete audit list: one line per commit (`<short-sha> <subject> — <issue>`). If the audit is empty — no notes commits, no Co-authored-by lines, every author already matches `<gh-name> <gh-email>` — skip to step 5 (still do not push before step 5 checks).
 
@@ -111,7 +111,7 @@ If step 3 found no issues, treat that as implicit approval to proceed — still 
 
 ## 5. Rewrite history — only after step 4 yes, and only on unpushed commits
 
-- Create a backup ref first: `send-beautiful-pr-backup-<YYYYMMDD>-<HHMMSS>` at current `HEAD`.
+- Create a backup ref first: `send-gorgeous-pr-backup-<YYYYMMDD>-<HHMMSS>` at current `HEAD`.
 
 - Replay `base..HEAD` onto a clean branch tip:
 
@@ -119,14 +119,14 @@ If step 3 found no issues, treat that as implicit approval to proceed — still 
   2. **Strip** every `Co-authored-by:` line from remaining commit messages.
   3. **Reauthor** every remaining commit to `<gh-name> <gh-email>` for both author and committer.
 
-  Prefer a non-interactive replay (cherry-pick or `git rebase` with a scripted loop) over manual `-i` editing. The code tree of the pushed commits must stay byte-identical to what it was before dropping notes commits — only `PR-DESCRIPTION.md` may disappear from the pushed history. Commits must not contain `tmp/the-beautiful-loop-fixes.md`.
+  Prefer a non-interactive replay (cherry-pick or `git rebase` with a scripted loop) over manual `-i` editing. The code tree of the pushed commits must stay byte-identical to what it was before dropping notes commits — only `PR-DESCRIPTION.md` may disappear from the pushed history. Commits must not contain `tmp/the-gorgeous-loop-fixes.md`.
 
 - Verify:
 
   ```bash
   git diff <backup> HEAD -- . ':(exclude)PR-DESCRIPTION.md'   # must be empty
   git log --format=%B <base>..HEAD | grep -i '^Co-authored-by:'  # must find nothing
-  git log --name-only --format= <base>..HEAD -- tmp/the-beautiful-loop-fixes.md  # must be empty
+  git log --name-only --format= <base>..HEAD -- tmp/the-gorgeous-loop-fixes.md  # must be empty
   ```
 
   Every commit in `<base>..HEAD` must show author `<gh-name> <gh-email>` and must not be authored by Elon Presley.
@@ -135,7 +135,7 @@ If step 3 found no issues, treat that as implicit approval to proceed — still 
 
 ## 6. Derive the PR title
 
-- Read `tmp/send-beautiful-pr-body.md` (saved in step 3). Its full contents are the PR **body** verbatim.
+- Read `tmp/send-gorgeous-pr-body.md` (saved in step 3). Its full contents are the PR **body** verbatim.
 
 - Derive a concise **title** from that file:
   - Prefer the first bullet under `## Summary` (strip list markers and bracket placeholders).
@@ -161,7 +161,7 @@ If step 3 found no issues, treat that as implicit approval to proceed — still 
 - Create against the default base branch:
 
   ```bash
-  gh pr create --base <base> --title "<title>" --body-file tmp/send-beautiful-pr-body.md
+  gh pr create --base <base> --title "<title>" --body-file tmp/send-gorgeous-pr-body.md
   ```
 
 - Return the PR URL. That is the primary deliverable.
@@ -172,7 +172,7 @@ If step 3 found no issues, treat that as implicit approval to proceed — still 
 
 - Print: branch name, base branch, GitHub login, author identity used (`<gh-name> <gh-email>`), audit findings, whether history was rewritten, push confirmation, PR URL, and title.
 
-- Write the same report to `tmp/send-beautiful-pr.md`.
+- Write the same report to `tmp/send-gorgeous-pr.md`.
 
 ## Safety and scope
 
@@ -186,6 +186,6 @@ If step 3 found no issues, treat that as implicit approval to proceed — still 
 
 - **No invented PR text.** Body comes from the prepared `PR-DESCRIPTION.md`, not from fresh generation.
 
-- **`tmp/the-beautiful-loop-fixes.md` never goes upstream.** Local the-beautiful-loop scratch only; verify absent from pushed commits.
+- **`tmp/the-gorgeous-loop-fixes.md` never goes upstream.** Local the-gorgeous-loop scratch only; verify absent from pushed commits.
 
-- Do not reshape code commits, rebase onto main, or rewrite `PR-DESCRIPTION.md` — those belong to `/prepare-beautiful-pr`, `/prepare-beautiful-pr`, and `/fast-beautiful-forward`. Scratch under gitignored `tmp/`.
+- Do not reshape code commits, rebase onto main, or rewrite `PR-DESCRIPTION.md` — those belong to `/prepare-gorgeous-pr` and `/fast-gorgeous-forward`. Scratch under gitignored `tmp/`.

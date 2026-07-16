@@ -1,9 +1,9 @@
 ---
-name: fast-beautiful-forward
-description: "Replays the current branch's local commits on top of the freshest main of a real REMOTE upstream (GitHub or another proper remote — never a local directory), so that a pull request opened LATER would be a clean fast-forward. Auto-resolves only conflicts it is certain about; for any genuine conflict it stops and asks the user one question at a time. Never pushes and never opens the PR. Use when the user invokes fast-beautiful-forward, /fast-beautiful-forward, or asks to fast-forward / rebase their branch onto upstream main so a future PR fast-forwards."
+name: fast-gorgeous-forward
+description: "Replays the current branch's local commits on top of the freshest main of a real REMOTE upstream (GitHub or another proper remote — never a local directory), so that a pull request opened LATER would be a clean fast-forward. Auto-resolves only conflicts it is certain about; for any genuine conflict it stops and asks the user one question at a time. Never pushes and never opens the PR. Use when the user invokes fast-gorgeous-forward, /fast-gorgeous-forward, or asks to fast-forward / rebase their branch onto upstream main so a future PR fast-forwards."
 ---
 
-# fast-beautiful-forward — make the branch fast-forward onto upstream main
+# fast-gorgeous-forward — make the branch fast-forward onto upstream main
 
 The contract is small and absolute:
 
@@ -47,4 +47,4 @@ The contract is small and absolute:
 
 ## 6. Report
 
-- Print: the upstream and main branch used, the base SHA, the commits replayed (`git log --oneline <upstream>/<main>..HEAD`), each conflict and how it was resolved, and a confirmation that the branch now fast-forwards — `git merge-base --is-ancestor <upstream>/<main> HEAD` exits clean. Tell the user it is ready and that opening the PR is their next, separate step. Write this same report to `tmp/fast-beautiful-forward.md` so it persists after the run.
+- Print: the upstream and main branch used, the base SHA, the commits replayed (`git log --oneline <upstream>/<main>..HEAD`), each conflict and how it was resolved, and a confirmation that the branch now fast-forwards — `git merge-base --is-ancestor <upstream>/<main> HEAD` exits clean. Tell the user it is ready and that opening the PR is their next, separate step. Write this same report to `tmp/fast-gorgeous-forward.md` so it persists after the run.

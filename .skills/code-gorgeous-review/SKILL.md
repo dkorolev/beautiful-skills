@@ -1,9 +1,9 @@
 ---
-name: code-beautiful-review
-description: "Runs the scsh `code-review` profile — resolved from the target repo's own .scsh.yml or, when it is not declared there, from the machine-wide manifest installed by `scsh installskills --global` — over the current branch against local main/master or a local base the user names, without writing anything into the target repo. Reads every reviewer's result, prints a one-row-per-invocation summary table, and clusters important findings separately from stylistic comments. Read-only: it never edits code, pushes, or opens a PR. Use when the user invokes code-beautiful-review, /code-beautiful-review, or asks to run the beautiful code review."
+name: code-gorgeous-review
+description: "Runs the scsh `code-review` profile — resolved from the target repo's own .scsh.yml or, when it is not declared there, from the machine-wide manifest installed by `scsh installskills --global` — over the current branch against local main/master or a local base the user names, without writing anything into the target repo. Reads every reviewer's result, prints a one-row-per-invocation summary table, and clusters important findings separately from stylistic comments. Read-only: it never edits code, pushes, or opens a PR. Use when the user invokes code-gorgeous-review, /code-gorgeous-review, or asks to run the gorgeous code review."
 ---
 
-# code-beautiful-review — run the review fleet, then cluster the findings
+# code-gorgeous-review — run the review fleet, then cluster the findings
 
 The contract:
 
@@ -15,7 +15,7 @@ scsh resolves the `code-review` profile on its own: the target repo's `.scsh.yml
 
 ```sh
 cargo install scsh
-scsh installskills --global
+scsh installskills --global https://github.com/dkorolev/code-review-skills
 ```
 
 ## 1. Preconditions — check FIRST; if any fails, stop and say exactly how to fix it
@@ -28,7 +28,7 @@ scsh installskills --global
   scsh check-profile code-review
   ```
 
-  Exit 0 means scsh found the profile — in this repo's `.scsh.yml` or in the global manifest — with at least one skill. If non-zero, tell the user to run `scsh installskills --global` (scsh 1.25+) and stop. Do **not** run `scsh installskills` into the target repo.
+  Exit 0 means scsh found the profile — in this repo's `.scsh.yml` or in the global manifest — with at least one skill. If non-zero, tell the user to run `scsh installskills --global https://github.com/dkorolev/code-review-skills` (scsh 1.25+) and stop. Do **not** run `scsh installskills` into the target repo.
 
 - **Local git repo with a local base branch.** Do not require `origin`, do not require GitHub, do not fetch, and do not require local `main` to match any remote. Use local `main` as the default base, falling back to local `master`; if neither exists, stop and ask for the local branch/ref to compare against. If the user names a base branch/ref explicitly, honor it verbatim.
 
@@ -66,7 +66,7 @@ Each reviewer diffs `origin/main..HEAD` inside its own clone, so make `origin/ma
 
   ```sh
   SCSH_KEEP_RUNS=1 scsh run code-review 2>&1 \
-    | tee tmp/code-beautiful-review-<YYYYMMDD>-<HHMMSS>-<rand>/run.out
+    | tee tmp/code-gorgeous-review-<YYYYMMDD>-<HHMMSS>-<rand>/run.out
   ```
 
   scsh runs every configured invocation in parallel, each in its own ephemeral container on a clean clone of the branch, diffed against the base you pinned in step 2. Unavailable harnesses or models print `⚠ skipping …` and are not run.
@@ -101,7 +101,7 @@ A row whose harness was skipped by scsh is `SKIPPED` — say so rather than gues
 
 After the full table, print a short **per-reviewer rollup** for the five base reviewers: for each, list how many model routes ran, the issue counts per route, and the strictest grade seen across routes.
 
-Write the full summary — this table, the per-reviewer rollup, and the important/stylistic clusters from the next step — to `tmp/code-beautiful-review.md` in **this** repo (not the prepared clone, which is about to be deleted), so the run leaves a persistent report where the user will look for it. State at the top of the report which local base ref/SHA the review used and whether histories were related.
+Write the full summary — this table, the per-reviewer rollup, and the important/stylistic clusters from the next step — to `tmp/code-gorgeous-review.md` in **this** repo (not the prepared clone, which is about to be deleted), so the run leaves a persistent report where the user will look for it. State at the top of the report which local base ref/SHA the review used and whether histories were related.
 
 ## 6. Filter and cluster the findings
 
