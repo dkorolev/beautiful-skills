@@ -2,9 +2,24 @@
 
 This repository is the **authoring home** for a small family of self-contained, AI-Assisted-Coding skills. Each skill lives in its own directory under `.skills/` and is complete on its own — every rule it relies on is written into its `SKILL.md`, because a skill is deployed by copying its directory, by itself, into a target repository.
 
-## Install with `scsh`
+## Install — two commands, machine-wide
 
-These skills are meant to be installed with **`scsh`** (Scoped Skills Helper — see https://github.com/dkorolev/scsh for details). One command drops the whole family into any repository:
+```sh
+cargo install scsh
+scsh installskills --global
+```
+
+That is the whole setup. scsh (1.25+) bundles this family and its reviewer fleet, and `installskills --global` installs everything machine-wide: the skills land under `~/.scsh/.skills/`, their profiles merge into the **global manifest** `~/.scsh/.scsh.yml`, and every skill is symlinked into the user-level skills dir of each coding agent already present on the machine (`~/.claude/skills`, `~/.cursor/skills`, `~/.codex/skills`, ...). From then on `/code-beautiful-review` works in **any** git repository: `scsh run code-review` resolves the profile from the repo's own `.scsh.yml` when it declares it, and from the global manifest otherwise — no `.scsh.yml` or `.skills/` ever lands in the reviewed repo.
+
+To track this repository fresher than the copy bundled with your scsh build, install straight from the sources instead (same command, same layout):
+
+```sh
+scsh installskills --global https://github.com/dkorolev/beautiful-skills https://github.com/dkorolev/code-review-skills
+```
+
+## Per-repo install with `scsh` (optional)
+
+The skills can also be dropped into one repository — for a team that wants them committed and versioned with the code:
 
 ```sh
 scsh installskills https://github.com/dkorolev/beautiful-skills
@@ -20,9 +35,9 @@ Each skill sits under its own profile in `.scsh.yml`, so a bare `scsh run` is a 
 
 - **fast-beautiful-forward** — rebases your branch's local commits onto the freshest main of a real remote upstream, so a pull request opened later is a clean fast-forward. Resolves only the conflicts it is certain about and asks about the rest one at a time, and never pushes or opens the PR.
 
-- **code-beautiful-review** — runs the scsh `code-review` reviewer fleet over the branch against local `main`/`master` (no fetch required), then turns the scattered findings into one per-reviewer summary table and clusters important findings separately from stylistic comments.
+- **code-beautiful-review** — runs the scsh `code-review` reviewer fleet (resolved from the repo's own `.scsh.yml` or the global manifest — nothing installed into the target repo) over the branch against local `main`/`master` (no fetch required), then turns the scattered findings into one per-reviewer summary table and clusters important findings separately from stylistic comments.
 
-- **the-beautiful-loop** — loops after `code-beautiful-review`: fixes every important cluster, commits, re-runs `prepare-beautiful-pr` and `code-beautiful-review` until the fleet passes a strict score bar (all routes succeeded, only excellent/good, mean ≥ 4.5). Never pushes or opens the PR.
+- **the-beautiful-loop** — loops after `code-beautiful-review`: fixes every important cluster, commits, re-runs `prepare-beautiful-pr` and `code-beautiful-review` until the fleet passes a strict score bar (all routes succeeded, only excellent/good, mean ≥ 4.5). Reviews and fixes run against a base pinned once at the start — the loop never gates an iteration on sitting atop the freshest main; rebasing (`fast-beautiful-forward`) is a single step after it converges. Never pushes or opens the PR.
 
 - **prepare-beautiful-pr** — run after a feature is built to get the branch PR-ready: confirms a clean, non-main branch stacked on main (pointing you at `fast-beautiful-forward` otherwise), offers to factor oversized or mixed commits into focused ones while keeping the code tree byte-identical, ensures `PR-DESCRIPTION.md` is the unique last commit, then writes or updates it using a BLUF `Summary`, `What This Changes`, and `Implementation Details` shape (no separate test plan) and commits it as the special notes author. Never pushes or opens the PR.
 
