@@ -18,6 +18,32 @@ That is the whole setup. `scsh installskills --global` (scsh 1.25+) installs thi
 
 **Why `-gorgeous-`?** The scsh binary bundles an older snapshot of this family under the original `-beautiful-` names (that is what a bare `scsh installskills --global`, with no URLs, installs). This repository's shipped skills are TEMPORARILY named `-gorgeous-` (`big-beautiful-build` keeps its name) so the fresh, from-source family installs and runs alongside the bundled one without any name collisions — in the global manifest, in the agents' skills dirs, and in repos that already carry `-beautiful-` installs.
 
+## Uninstall — it is all just files
+
+A global install is three kinds of plain files, so removal is plain `rm` — there is no uninstaller:
+
+- **Skill bodies** are real directories under `~/.scsh/.skills/<name>/`.
+
+- **Agent entries** are per-skill symlinks at `~/.claude/skills/<name>`, `~/.cursor/skills/<name>`, `~/.codex/skills/<name>`, ... pointing into `~/.scsh/.skills/`. Remove the symlink itself with plain `rm` — no `-r`, and no trailing slash (a trailing slash would make `rm` follow the link into the real directory).
+
+- **The global manifest** is `~/.scsh/.scsh.yml`, one block per skill under `skills:`. Delete the skill's block — do not leave an entry whose `~/.scsh/.skills/<name>/` is gone, or `scsh` would resolve the profile and then fail on the missing skill body.
+
+One skill:
+
+```sh
+rm ~/.claude/skills/the-gorgeous-loop ~/.cursor/skills/the-gorgeous-loop   # each agent you use
+rm -rf ~/.scsh/.skills/the-gorgeous-loop
+# ...then delete its block from ~/.scsh/.scsh.yml
+```
+
+The whole gorgeous family (the reviewers and `big-beautiful-build` follow the same per-name pattern):
+
+```sh
+for a in ~/.claude ~/.cursor ~/.codex ~/.opencode ~/.agents; do rm -f "$a"/skills/*-gorgeous-*; done
+rm -rf ~/.scsh/.skills/*-gorgeous-*
+# ...then delete their blocks from ~/.scsh/.scsh.yml — or `rm ~/.scsh/.scsh.yml` to drop EVERY globally-installed profile
+```
+
 ## Per-repo install with `scsh` (optional)
 
 The skills can also be dropped into one repository — for a team that wants them committed and versioned with the code:
