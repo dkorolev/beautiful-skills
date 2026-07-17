@@ -30,13 +30,13 @@ The contract:
 
 ## Stage 2. The native pipeline — scsh runs the loop (scsh 1.28+)
 
-The `gorgeous-pipeline` builtin IS the unattended pipeline, run by scsh itself: `prepare` writes or updates `PR-DESCRIPTION.md` from the branch's own history, the 15-route fleet (conventions, justification, reviewability, sanity, and testing — each independently through Opus 4.8, Codex Terra, and Cursor Auto) reviews the branch's change set once, and then decide → fix → 15 reviewers loops until the bar is met (15/15 succeed, all excellent/good, excellent > good, mean ≥ 4.5). The whole loop is ONE job whose cycles render live on its page.
+The `gorgeous-pipeline` builtin IS the unattended pipeline, run by scsh itself: `prepare` writes or updates `PR-DESCRIPTION.md` from the branch's own history, the 15-route fleet (conventions, justification, reviewability, sanity, and testing — each independently through Opus 4.8, Codex Terra, and Cursor Auto) reviews the branch's change set once, and then decide → fix → 15 reviewers loops until the bar is met (15/15 succeed, all excellent/good, excellent > good, mean ≥ 4.5). Every reviewer is static-only: it reads commits, diffs, source, tests, and docs, but never builds, runs, lints, tests, executes repository scripts, or invokes the product. The whole loop is ONE job whose cycles render live on its page.
 
 - The repo must be run-ready (`tmp/` or `.harness/tmp` gitignored, tree committed) — `scsh run` verifies this itself and says exactly what is missing; relay its message and stop if it refuses.
 
 - Run it, capturing the output: `scsh run --def gorgeous-pipeline 2>&1 | tee tmp/kickoff-gorgeous-pipeline-run.log`. As soon as scsh prints the session-browser link, tell the user: the job page shows the loop's cycles, every reviewer's recording, and the fleet tables, live.
 
-- Wait for the run to finish. `prepare` and every in-loop `fix` come back as commits on the current branch (scsh's commit-integration; the diffs are browsable from the job page). Reviewers are read-only.
+- Wait for the run to finish. `prepare` and every in-loop `fix` come back as commits on the current branch (scsh's commit-integration; the diffs are browsable from the job page). Reviewers are read-only and static-only; a reviewer that executes the repository has violated its contract, and its result must not count toward the bar.
 
 - Read the outcome from the run output and the result files it names: the final `decide` breaking the loop means the bar was met; a run that ends without approval (loop ceiling, a failed route, every route skipped) is reported exactly as scsh describes it. Do not re-run or improvise around a refusal.
 

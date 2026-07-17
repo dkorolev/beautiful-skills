@@ -58,7 +58,7 @@ Each reviewer diffs `origin/main..HEAD` inside its own clone, so make `origin/ma
 
 - Run in the directory you settled on in step 2 — this repo if local `main` already was exactly the chosen base, otherwise the prepared clone. Everything below happens there.
 
-- **Containers never fetch.** `scsh run code-gorgeous-review` bind-mounts a host-prepared clone into each container. The reviewer agents must not `git fetch`, `git pull`, or `git clone` — if a reviewer tries, that violates the skill contract. Missing refs are a host prep bug (step 2), not something to fix inside the container.
+- **Containers never fetch or execute the repository.** `scsh run code-gorgeous-review` bind-mounts a host-prepared clone into each container. The reviewer agents must not `git fetch`, `git pull`, or `git clone`, and they must review statically: read commits, diffs, source, tests, and docs without building, running, linting, testing, executing repository scripts, or invoking the product. Any such attempt violates the reviewer contract; missing refs are a host prep bug (step 2), not something to fix inside the container.
 
 - Record the starting point first: `git rev-parse HEAD` (so you can spot anything the run adds), and note the wall-clock start.
 
