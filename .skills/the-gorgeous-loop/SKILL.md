@@ -75,7 +75,7 @@ If any criterion fails, continue to step 1.
 
 From the latest review round (JSON + `tmp/code-gorgeous-review.md`):
 
-- Take **every important cluster** from the report — not stylistic comments unless they hide a real bug or the same stylistic issue has appeared in multiple consecutive rounds (then treat it as a documentation/clarity fix).
+- Take **every important cluster** from the report — not stylistic comments unless they hide a real bug or the same stylistic issue has appeared in multiple consecutive rounds (then treat it as a documentation/clarity fix). When findings carry `severity`, a cluster with any `blocking` finding is mandatory this round, and `nit`-only clusters follow the stylistic rule above.
 
 - Merge duplicate clusters across reviewers/models. Note which invocations raised each cluster.
 
