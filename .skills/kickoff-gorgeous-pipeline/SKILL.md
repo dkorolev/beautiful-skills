@@ -1,6 +1,6 @@
 ---
 name: kickoff-gorgeous-pipeline
-description: "Runs the whole gorgeous delivery pipeline from the current branch in one invocation: first fast-gorgeous-forward (the interactive window — upstream questions and rebase conflicts are settled with the user up front), then UNATTENDED to the end. On scsh 1.28+ the unattended part IS the scsh-native `gorgeous-pipeline` workflow — prepare, the 15-route Opus/Codex/Cursor fleet, and the fix-review loop run as ONE job whose cycles render live in the session browser; on older scsh it falls back to driving prepare-gorgeous-pr, code-gorgeous-review, and the-gorgeous-loop in-session until the fleet passes the bar (only excellent/good, more excellent than good, mean >= 4.5). Never pushes and never opens the PR — send-gorgeous-pr stays a separate human step. Use when the user invokes kickoff-gorgeous-pipeline, /kickoff-gorgeous-pipeline, or asks to kick off the gorgeous pipeline."
+description: "Runs the whole gorgeous delivery pipeline from the current branch in one invocation: commits any uncommitted work, then fast-gorgeous-forward (the interactive window — upstream questions and rebase conflicts are settled with the user up front), then UNATTENDED to the end. On scsh 1.28+ the unattended part IS the scsh-native `gorgeous-pipeline` workflow — prepare, the 15-route Opus/Codex/Cursor fleet, and the fix-review loop run as ONE job whose cycles render live in the session browser; on older scsh it falls back to driving prepare-gorgeous-pr, code-gorgeous-review, and the-gorgeous-loop in-session until the fleet passes the bar (only excellent/good, more excellent than good, mean >= 4.5). Never pushes and never opens the PR — send-gorgeous-pr stays a separate human step. Use when the user invokes kickoff-gorgeous-pipeline, /kickoff-gorgeous-pipeline, or asks to kick off the gorgeous pipeline."
 ---
 
 # kickoff-gorgeous-pipeline — fast-forward with the user, then run unattended to a passing fleet
@@ -11,7 +11,11 @@ The contract:
 
 ## Stage 0. Preconditions — check FIRST; if any fails, stop and say exactly how to fix it
 
-- **Inside a git repository, on a non-default branch, with a clean working tree.** If any of these fails, stop and say which.
+- **Inside a git repository, on a non-default branch.** If either fails, stop and say which.
+
+- **Commit whatever is uncommitted — do not stop for it.** Everything downstream reads COMMITTED state: stage 1 rebases, which refuses a dirty tree, and `scsh run` clones the branch, so uncommitted work is invisible to the pipeline and to every reviewer that grades it. Stopping to ask is also actively misleading, because whichever command the user then runs to clear the tree looks like the pipeline's real prerequisite when all that was ever required was a clean tree. So: when `git status --porcelain` is non-empty, `git add -A` and commit with the message `Commit work in progress before the gorgeous pipeline.`, authored by the repository's normal git identity and NOT by the notes identity — this is the user's own work, not pipeline notes. Then report what you committed, the file count and the paths, because it is a change you made on their behalf. Nothing is pushed, here or anywhere else in this skill. When the tree is already clean, say nothing and move on.
+
+  Gitignored paths stay out of that commit automatically, which is exactly what the repository's `tmp/` entry is for. If something obviously unwanted still lands in it, say so and name the `.gitignore` entry that would exclude it next time — do not stop.
 
 - **scsh is installed and new enough for global skills (1.25+):** `command -v scsh && scsh help installskills 2>&1 | grep -q -- --global`. If not, tell the user to run `cargo install scsh` and stop.
 
@@ -52,7 +56,7 @@ Unchanged from the original pipeline, three sub-stages, all unattended:
 
 ## Stage 3. Report
 
-Write `tmp/kickoff-gorgeous-pipeline.md` and print it: one line per stage with its outcome (the upstream tip fast-forwarded onto, which engine ran the unattended part, the final score table and iteration count — for the native run, as read from the job's results), then the handoff: **nothing was pushed; when ready, `/send-gorgeous-pr` opens the PR** — and if upstream main moved while the loop ran, `/fast-gorgeous-forward` once more first. After a NATIVE run, also say plainly: the pipeline's `prepare` and `fix` commits are authored by scsh's bot identity, so `/send-gorgeous-pr` will offer to reauthor them before pushing — expected, not a problem.
+Write `tmp/kickoff-gorgeous-pipeline.md` and print it: one line per stage with its outcome (the work-in-progress commit if stage 0 made one, the upstream tip fast-forwarded onto, which engine ran the unattended part, the final score table and iteration count — for the native run, as read from the job's results), then the handoff: **nothing was pushed; when ready, `/send-gorgeous-pr` opens the PR** — and if upstream main moved while the loop ran, `/fast-gorgeous-forward` once more first. After a NATIVE run, also say plainly: the pipeline's `prepare` and `fix` commits are authored by scsh's bot identity, so `/send-gorgeous-pr` will offer to reauthor them before pushing — expected, not a problem.
 
 ## Safety and scope
 
