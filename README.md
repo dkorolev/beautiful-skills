@@ -83,6 +83,8 @@ Each skill sits under its own profile in `.scsh.yml`, so a bare `scsh run` is a 
 
 Each skill declares a `result` report that it writes under the gitignored `tmp/` (`tmp/<skill>.md`).
 
+`gh-gorgeous-review` reviews a GitHub PR from its URL and publishes one review after the fleet succeeds, unless a preview or local-only review was requested. It can reuse a matching completed browser review. Preparation explicitly allows reading named environment inputs and writing the declared result file; GitHub publication belongs to the publication step. Invoke `/gh-gorgeous-review <PR URL>` in an agent session, or supply `PR_URL` when running its named profile. Its fixed report paths mean runs must not overlap in the same invocation repository or for the same PR.
+
 ## Working on the skills
 
 `PRINCIPLES.md` is the **canonical specification** for this family — the conventions every skill must follow. It is an author's reference only: it is **not** shipped (a target repo gets the skill directories alone), and a skill must never refer to it. The duplication between `PRINCIPLES.md` and each self-contained `SKILL.md` is deliberate and essential — it is the deployment mechanism, not a smell.
