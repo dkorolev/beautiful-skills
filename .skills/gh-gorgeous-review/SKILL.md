@@ -198,6 +198,12 @@ Before posting, recheck the PR head and base against the reviewed revision; stop
 
 - **One PR-level comment at the end.** The review's `body` is the single PR-level comment: a brief, friendly overall impression, then any findings that couldn't be anchored inline, then the stylistic notes condensed to a short list. Do not paste the raw summary table, grades, or reviewer names into it.
 
+**Preserve Markdown through preparation and publication.** Treat reviewer descriptions and suggestions as Markdown, including when extracting structured findings, deduplicating, or rewriting for a human voice. Preserve inline code spans, fenced code and suggestion blocks, links, and paragraph breaks. Quote code identifiers, expressions, filenames, paths, command names, and commit hashes with backticks when writing new prose. For example, keep `rootExplicitlyClosed`, `additionalProperties`, and `return isBool && !closed` quoted; do not flatten them into plain text. Do not try to repair lost quoting with a blanket word-matching replacement: ordinary prose can share names with code.
+
+**Readable locations.** PR-level findings with an empty or synthetic location belong under a meaningful heading such as "Overall change". File-level findings use the quoted path alone; include `:line` only for a real positive line number. Never publish empty location headings or `:0`. Continue calling the reconstructed local notes file "Pull Request Description" in published prose.
+
+**Inspect the final payload before posting.** Read the decoded review body and every inline comment from the JSON that will actually be submitted. Compare them with the source findings: code quoting and fenced blocks must survive consolidation, headings must describe real locations, and the opening paragraph must accurately describe whether findings are inline, in the body, or both. Correct formatting before submitting. Use a JSON serializer or a structured tool input so shell interpolation cannot consume backticks. After posting, read back the review and its inline comments and verify their Markdown bodies match the submitted payload; report any mismatch without posting a duplicate review.
+
 Submit it in one API call, building the JSON payload in the clone's `tmp/` (e.g. `tmp/gh-review-payload.json`, never committed) to sidestep shell quoting:
 
 ```sh
